@@ -1,0 +1,176 @@
+---
+import type { NoteGraph } from '../lib/notes';
+
+interface Props {
+  graph: NoteGraph;
+}
+const { graph } = Astro.props;
+
+// Deterministic radial layout, computed at build time — no client JS, no
+// physics simulation that lands somewhere different on every reload.
+// Nodes are grouped by their first tag so that related notes sit adjacent on
+// the ring; that keeps intra-cluster chords short and makes the clusters
+// legible instead of producing a ball of yarn.
+const CX = 300;
+const CY = 300;
+const R = 196;
+
+const groups = new Map<string, typeof graph.nodes>();
+for (const node of graph.nodes) {
+  const key = node.tags[0] ?? 'untagged';
+  groups.set(key, [...(groups.get(key) ?? []), node]);
+}
+
+const ordered = [...groups.entries()]
+  .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))
+  .flatMap(([tag, nodes]) =>
+    [...nodes]
+      .sort((a, b) => b.degree - a.degree || a.title.localeCompare(b.title))
+      .map((node) => ({ ...node, group: tag })),
+  );
+
+const total = ordered.length || 1;
+const placed = ordered.map((node, i) => {
+  const angle = (i / total) * Math.PI * 2 - Math.PI / 2;
+  return {
+    ...node,
+    x: CX + Math.cos(angle) * R,
+    y: CY + Math.sin(angle) * R,
+    angle,
+    // Right half of the circle labels outward-right, left half outward-left.
+    anchor: Math.cos(angle) >= 0 ? ('start' as const) : ('end' as const),
+    lx: CX + Math.cos(angle) * (R + 12),
+    ly: CY + Math.sin(angle) * (R + 12),
+    r: Math.min(3 + node.degree * 0.9, 8),
+  };
+});
+
+const pos = new Map(placed.map((n) => [n.id, n]));
+
+// Chords are drawn as quadratic curves bowed toward the centre. Straight
+// chords across a dense circle turn into visual mush; curving them by the
+// angular distance keeps neighbours' links tight to the rim and long-range
+// links sweeping through the middle, which is the information you want.
+const chords = graph.edges
+  .map((edge) => {
+    const a = pos.get(edge.source);
+    const b = pos.get(edge.target);
+    if (!a || !b) return null;
+    let delta = Math.abs(a.angle - b.angle);
+    if (delta > Math.PI) delta = Math.PI * 2 - delta;
+    const pull = 1 - delta / Math.PI;
+    const mx = CX + ((a.x + b.x) / 2 - CX) * pull;
+    const my = CY + ((a.y + b.y) / 2 - CY) * pull;
+    return { d: `M${a.x.toFixed(1)} ${a.y.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${b.x.toFixed(1)} ${b.y.toFixed(1)}` };
+  })
+  .filter((c): c is { d: string } => c !== null);
+
+// Labelling every node past ~28 is unreadable; show the best-connected ones.
+const labelled = new Set(
+  [...placed].sort((a, b) => b.degree - a.degree).slice(0, 28).map((n) => n.id),
+);
+
+const clusterCount = groups.size;
+---
+
+<div class="map">
+  <svg viewBox="0 0 600 600" role="img" aria-labelledby="mapTitle mapDesc">
+    <title id="mapTitle">System map of linked notes</title>
+    <desc id="mapDesc">
+      {graph.nodes.length} notes connected by {graph.edges.length} links across {clusterCount} clusters.
+    </desc>
+
+    <circle cx={CX} cy={CY} r={R} class="ring" />
+    <circle cx={CX} cy={CY} r={R * 0.62} class="ring ring-faint" />
+    <circle cx={CX} cy={CY} r={R * 0.28} class="ring ring-faint" />
+
+    <g class="chords">{chords.map((c) => <path d={c.d} />)}</g>
+
+    <g class="nodes">
+      {
+        placed.map((n) => (
+          <a href={`/notes/${n.id}/`}>
+            <circle cx={n.x} cy={n.y} r={n.r} class={n.degree > 0 ? 'node' : 'node node-lone'} />
+            {labelled.has(n.id) && (
+              <text
+                x={n.lx}
+                y={n.ly}
+                text-anchor={n.anchor}
+                dominant-baseline="middle"
+                class="node-lbl"
+              >
+                {n.title.length > 26 ? `${n.title.slice(0, 25)}…` : n.title}
+              </text>
+            )}
+          </a>
+        ))
+      }
+    </g>
+  </svg>
+
+  <div class="map-legend">
+    <span class="lbl">Nodes {graph.nodes.length}</span>
+    <span class="lbl">Links {graph.edges.length}</span>
+    <span class="lbl">Clusters {clusterCount}</span>
+    {graph.orphans.length > 0 && <span class="lbl">Unwritten {graph.orphans.length}</span>}
+  </div>
+</div>
+
+<style>
+  .map {
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+  }
+  svg {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    overflow: visible;
+  }
+  .ring {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+  .ring-faint {
+    stroke-dasharray: 2 5;
+  }
+  .chords path {
+    fill: none;
+    stroke: var(--cyan);
+    stroke-width: 1;
+    opacity: 0.4;
+  }
+  .node {
+    fill: var(--navy);
+    stroke: var(--panel);
+    stroke-width: 1.5;
+    transition: fill 0.15s ease;
+  }
+  .node-lone {
+    fill: var(--panel);
+    stroke: var(--line-2);
+  }
+  .node-lbl {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.04em;
+    fill: var(--mute);
+  }
+  a:hover .node,
+  a:focus-visible .node {
+    fill: var(--yellow-deep);
+  }
+  a:hover .node-lbl,
+  a:focus-visible .node-lbl {
+    fill: var(--ink);
+    font-weight: 700;
+  }
+  .map-legend {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+</style>

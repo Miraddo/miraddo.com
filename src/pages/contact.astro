@@ -1,0 +1,96 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { site, links, languages } from '../lib/site';
+---
+
+<Base
+  title="Contact"
+  description={`Get in touch with Milad Poshtdari — ${site.email}`}
+  context="CONTACT"
+>
+  <section class="panel">
+    <span class="lbl">Contact</span>
+    <h1 class="display" style="font-size:clamp(30px,5vw,52px)">Get in touch</h1>
+    <div class="rule-y"></div>
+    <p class="lede">
+      Go, distributed systems, teaching, or anything worth building properly. I read everything,
+      and I answer things that are not automated.
+    </p>
+    <div class="btn-row" style="margin-top:18px">
+      <a class="btn btn-solid" href={`mailto:${site.email}`}>{site.email}</a>
+    </div>
+  </section>
+
+  <div class="grid g2 mt">
+    <section class="panel">
+      <SectionHead title="Elsewhere" />
+      {
+        links.map((l) => (
+          <div class="lg">
+            <span class="k">{l.short}</span>
+            <span>
+              <a href={l.href} rel={l.href.startsWith('http') ? 'me noopener' : undefined}>
+                {l.handle}
+              </a>
+            </span>
+          </div>
+        ))
+      }
+    </section>
+
+    <section class="panel">
+      <SectionHead title="Practical" />
+      <div class="lg"><span class="k">Based in</span><span>{site.location}</span></div>
+      <div class="lg"><span class="k">Timezone</span><span>Europe/Berlin (CET / CEST)</span></div>
+      <div class="lg"><span class="k">Role</span><span>{site.role}, {site.company}</span></div>
+      <div class="lg">
+        <span class="k">Languages</span>
+        <span>{languages.map((l) => `${l.name} (${l.level.toLowerCase()})`).join(' · ')}</span>
+      </div>
+    </section>
+  </div>
+
+  <section class="panel mt">
+    <SectionHead title="What I'm interested in" />
+    <div class="grid g3" style="gap:20px">
+      <div>
+        <span class="lbl">Good fit</span>
+        <ul class="list">
+          <li>Go and systems work with real constraints</li>
+          <li>Teaching, mentoring, workshops</li>
+          <li>Open source collaboration</li>
+          <li>Speaking about Go, networks, or debugging</li>
+        </ul>
+      </div>
+      <div>
+        <span class="lbl">Happy to help with</span>
+        <ul class="list">
+          <li>Reviewing a Go service design</li>
+          <li>Questions from people starting out</li>
+          <li>Persian-language technical resources</li>
+        </ul>
+      </div>
+      <div>
+        <span class="lbl">Not a fit</span>
+        <ul class="list">
+          <li>Unsolicited recruiting with no role detail</li>
+          <li>Anything requiring me to ship code I cannot explain</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .list {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+  }
+  .list li {
+    border-top: 1px solid var(--line);
+    padding: 7px 0;
+    font-size: 14px;
+  }
+</style>

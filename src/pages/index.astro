@@ -1,0 +1,134 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Readout from '../components/Readout.astro';
+import ProjectManifest from '../components/ProjectManifest.astro';
+import NoteList from '../components/NoteList.astro';
+import { site, links, now, stack, teaching, languages } from '../lib/site';
+import { getNotes } from '../lib/notes';
+
+const projects = (await getCollection('projects'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 6);
+
+const notes = (await getNotes()).slice(0, 4);
+const allProjects = await getCollection('projects');
+const totalStars = allProjects.reduce((n, p) => n + p.data.stars, 0);
+---
+
+<Base>
+  <!-- ── hero panel ────────────────────────────────────────────── -->
+  <section class="panel hero">
+    <span class="lbl">{site.role.toUpperCase()} / {site.company.toUpperCase()}</span>
+    <h1 class="display">Milad<br />Poshtdari</h1>
+    <div class="rule-y"></div>
+    <p class="lede">{site.tagline}</p>
+    <div class="btn-row" style="margin-top:18px">
+      {
+        links.map((l) => (
+          <a class="btn" href={l.href} rel={l.href.startsWith('http') ? 'me noopener' : undefined}>
+            {l.short}
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ── now readouts ──────────────────────────────────────────── -->
+  <div class="grid g3 mt">
+    <Readout label="Now — Focus" text={now.focus} />
+    <Readout label="Now — Learning" text={now.learning} />
+    <Readout label="Now — Building" text={now.building} />
+  </div>
+
+  <!-- ── figures ───────────────────────────────────────────────── -->
+  <div class="grid g4 mt">
+    <Readout label="Public repositories" value={`${site.publicRepos}`} fine="github.com/miraddo" />
+    <Readout label="Primary language" value="Go" fine="C, Python, SQL, Bash" />
+    <Readout label="Stars earned" value={`${totalStars}`} fine={`Across ${allProjects.length} listed projects`} />
+    <Readout label="Languages spoken" value={`${languages.length}`} fine={languages.map((l) => l.name).join(' · ')} />
+  </div>
+
+  <!-- ── selected work ─────────────────────────────────────────── -->
+  <section class="panel mt">
+    <SectionHead title="Selected Work" count={`${String(projects.length).padStart(2, '0')} ENTRIES`} />
+    <ProjectManifest projects={projects} />
+    <div class="btn-row" style="margin-top:16px">
+      <a class="btn" href="/projects/">All projects →</a>
+      <a class="btn" href="https://github.com/miraddo" rel="noopener">GitHub →</a>
+    </div>
+  </section>
+
+  <!-- ── stack + writing ───────────────────────────────────────── -->
+  <div class="grid g2 mt">
+    <section class="panel">
+      <SectionHead title="Stack" />
+      <div class="grid g2" style="gap:16px">
+        {
+          stack.map((group) => (
+            <div>
+              <span class="lbl" style="margin-bottom:7px">
+                {group.label}
+              </span>
+              <div class="chips">
+                {group.items.map((item) => (
+                  <span class={'primary' in item && item.primary ? 'chip chip-hi' : 'chip'}>{item.name}</span>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <div class="btn-row" style="margin-top:16px">
+        <a class="btn" href="/uses/">Full toolkit →</a>
+      </div>
+    </section>
+
+    <section class="panel">
+      <SectionHead title="Writing" count="NOTES" />
+      <NoteList
+        notes={notes}
+        emptyLabel="No notes published yet"
+        emptyText="The notes system is built and waiting. First entries are being written."
+        showTags={false}
+      />
+      <div class="btn-row" style="margin-top:16px">
+        <a class="btn" href="/notes/">All notes →</a>
+        <a class="btn" href="/rss.xml">RSS</a>
+      </div>
+    </section>
+  </div>
+
+  <!-- ── teaching ──────────────────────────────────────────────── -->
+  <section class="panel mt">
+    <SectionHead title={teaching.headline} />
+    <div class="prose">
+      {teaching.body.map((line) => <p>{line}</p>)}
+    </div>
+  </section>
+
+  <!-- ── contact ───────────────────────────────────────────────── -->
+  <section class="panel panel-dark mt">
+    <span class="lbl">Contact</span>
+    <h2 style="font-size:24px;font-weight:600;margin:8px 0 6px">Let's talk</h2>
+    <p style="max-width:56ch;margin-bottom:16px">
+      Go, distributed systems, teaching, or anything worth building properly.
+    </p>
+    <div class="btn-row">
+      <a class="btn btn-solid" href={`mailto:${site.email}`}>{site.email}</a>
+      <a class="btn" href="/contact/">More ways →</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding: 34px 30px;
+  }
+  @media (max-width: 620px) {
+    .hero {
+      padding: 24px 18px;
+    }
+  }
+</style>

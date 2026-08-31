@@ -1,0 +1,55 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  projects: CollectionEntry<'projects'>[];
+  /** Show the status column. Off on the homepage to keep it scannable. */
+  showStatus?: boolean;
+}
+const { projects, showStatus = false } = Astro.props;
+---
+
+<div class="scroller">
+  <table class="manifest">
+  <thead>
+    <tr>
+      <th scope="col">Project</th>
+      <th scope="col">Description</th>
+      <th scope="col">Lang</th>
+      {showStatus && <th scope="col">Status</th>}
+      <th scope="col" class="r">Stars</th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      projects.map((p) => (
+        <tr>
+          <td class="n">
+            {p.data.repo ? (
+              <a href={p.data.repo} rel="noopener">
+                {p.data.title}
+              </a>
+            ) : (
+              p.data.title
+            )}
+          </td>
+          <td class="d">{p.data.summary}</td>
+          <td class="m">{p.data.language}</td>
+          {showStatus && <td class="m">{p.data.status.toUpperCase()}</td>}
+          <td class="m r">{p.data.stars > 0 ? `★ ${p.data.stars}` : '—'}</td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>
+</div>
+
+<style>
+  /* The manifest is a real data table: at 320px its columns cannot compress
+     below ~330px without wrapping project names, so it scrolls inside its own
+     container rather than pushing the whole page sideways. */
+  .scroller {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+</style>

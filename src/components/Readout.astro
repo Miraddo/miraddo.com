@@ -1,0 +1,19 @@
+---
+interface Props {
+  label: string;
+  /** Large monospace figure. Use for counts, not sentences. */
+  value?: string;
+  /** Sentence-length content. */
+  text?: string;
+  fine?: string;
+}
+const { label, value, text, fine } = Astro.props;
+---
+
+<div class="panel readout">
+  <span class="lbl">{label}</span>
+  {value && <div class="num">{value}</div>}
+  {text && <div class="val">{text}</div>}
+  {fine && <div class="fine">{fine}</div>}
+  <slot />
+</div>

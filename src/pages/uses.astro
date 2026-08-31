@@ -1,0 +1,110 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { stack, certifications } from '../lib/site';
+
+const toolkit = [
+  {
+    label: 'Editor & shell',
+    items: [
+      ['Editor', 'Neovim and GoLand, depending on how deep the refactor is'],
+      ['Shell', 'zsh, with a prompt that shows the Kubernetes context so I stop deploying to the wrong cluster'],
+      ['Terminal', 'tmux for anything that outlives a single command'],
+      ['Notes', 'Obsidian — hence the daily-note and template plugins on my GitHub'],
+    ],
+  },
+  {
+    label: 'Building',
+    items: [
+      ['Language', 'Go for services, C when the question is what is actually happening'],
+      ['Testing', 'The standard library. Table-driven tests, no assertion framework'],
+      ['Profiling', 'pprof first, opinions second'],
+      ['API', 'gRPC and protobuf between services, plain HTTP+JSON at the edge'],
+    ],
+  },
+  {
+    label: 'Running',
+    items: [
+      ['Containers', 'Docker for builds, Kubernetes where the scale justifies it'],
+      ['Infrastructure', 'Terraform, mostly on AWS'],
+      ['Proxy', 'Caddy — automatic certificates, a config file you can read aloud'],
+      ['Database', 'PostgreSQL by default, pgvector when embeddings are involved'],
+    ],
+  },
+];
+---
+
+<Base
+  title="Uses"
+  description="The tools, languages, and infrastructure Milad Poshtdari works with."
+  context="USES / TOOLKIT"
+>
+  <section class="panel">
+    <span class="lbl">Uses</span>
+    <h1 class="display" style="font-size:clamp(30px,5vw,52px)">Toolkit</h1>
+    <div class="rule-y"></div>
+    <p class="lede">
+      What I actually reach for. Listed because it is the page I look for on other people's sites,
+      and because a tool list says more about how someone works than a skills bar chart ever has.
+    </p>
+  </section>
+
+  <section class="panel mt">
+    <SectionHead title="Stack" />
+    <div class="grid g4" style="gap:20px">
+      {
+        stack.map((group) => (
+          <div>
+            <span class="lbl" style="margin-bottom:8px">
+              {group.label}
+            </span>
+            <div class="chips">
+              {group.items.map((item) => (
+                <span class={'primary' in item && item.primary ? 'chip chip-hi' : 'chip'}>{item.name}</span>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {
+    toolkit.map((section) => (
+      <section class="panel mt">
+        <SectionHead title={section.label} />
+        {section.items.map(([key, value]) => (
+          <div class="lg">
+            <span class="k">{key}</span>
+            <span>{value}</span>
+          </div>
+        ))}
+      </section>
+    ))
+  }
+
+  <section class="panel mt">
+    <SectionHead title="Certifications" count={`${certifications.length} HELD`} />
+    <div class="grid g2" style="gap:0 30px">
+      {
+        certifications.map((c) => (
+          <div class="lg">
+            <span class="k">{c.issuer || 'Course'}</span>
+            <span>{c.name}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="panel mt">
+    <SectionHead title="This site" />
+    <div class="lg"><span class="k">Framework</span><span>Astro, static output, no client framework</span></div>
+    <div class="lg"><span class="k">Type</span><span>Space Grotesk · JetBrains Mono</span></div>
+    <div class="lg"><span class="k">Hosting</span><span>Hetzner, behind Caddy and Cloudflare</span></div>
+    <div class="lg"><span class="k">Notes</span><span>Markdown with wikilinks, backlinks computed at build time</span></div>
+    <div class="btn-row" style="margin-top:14px">
+      <a class="btn" href="/notes/colophon/">Full colophon →</a>
+    </div>
+  </section>
+</Base>

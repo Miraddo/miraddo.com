@@ -1,0 +1,81 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Readout from '../components/Readout.astro';
+import { now } from '../lib/site';
+
+const updated = new Date(now.updated);
+const formatted = updated.toLocaleDateString('en-GB', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+const daysOld = Math.floor((Date.now() - updated.valueOf()) / 86_400_000);
+---
+
+<Base
+  title="Now"
+  description="What Milad Poshtdari is focused on, learning, and building right now."
+  context={`NOW / UPDATED ${now.updated}`}
+>
+  <section class="panel">
+    <span class="lbl">Now · Last updated {formatted}</span>
+    <h1 class="display" style="font-size:clamp(30px,5vw,52px)">Right now</h1>
+    <div class="rule-y"></div>
+    <p class="lede">
+      A <a href="https://nownownow.com/about" rel="noopener" style="border-bottom:1px solid var(--yellow)">now page</a>:
+      what has my attention at this point in time, rather than a résumé of everything I have ever
+      done. If it is out of date, that is a bug — hold me to it.
+    </p>
+  </section>
+
+  <div class="grid g2 mt">
+    <Readout label="Focus" text={now.focus} />
+    <Readout label="Learning" text={now.learning} />
+    <Readout label="Building" text={now.building} />
+    <Readout label="Next" text={now.next} />
+  </div>
+
+  <section class="panel mt">
+    <SectionHead title="Detail" />
+    <div class="prose">
+      <h2>Work</h2>
+      <p>
+        Consulting at Lufthansa Industry Solutions in Hamburg: large-scale web applications and
+        enterprise systems. The interesting problems are rarely the code — they are the seams
+        between systems that were designed by different teams in different decades.
+      </p>
+
+      <h2>Study</h2>
+      <p>
+        Computer science at Universität zu Lübeck since 2024, alongside full-time work. Going back
+        to the formal foundations after years of practice turns out to be the right order: you
+        know which parts matter.
+      </p>
+
+      <h2>Building</h2>
+      <p>
+        <a href="https://github.com/Miraddo/goRAG" rel="noopener">goRAG</a> — a retrieval-augmented
+        generation backend in Go rather than a Python framework. Ingestion, embeddings, vector
+        search, and an HTTP surface small enough to read in one sitting.
+      </p>
+
+      <h2>Reading</h2>
+      <p>{now.reading}</p>
+
+      <h2>Teaching</h2>
+      <p>
+        Volunteer Python teaching at ReDI School of Digital Integration, for newcomers to Germany
+        writing their first line of code.
+      </p>
+    </div>
+  </section>
+
+  <section class="panel mt">
+    <span class="lbl">Freshness</span>
+    <p style="margin-top:8px">
+      This page was last updated <strong>{daysOld === 0 ? 'today' : `${daysOld} days ago`}</strong>.
+      Edit <code>src/lib/site.ts</code> to change it.
+    </p>
+  </section>
+</Base>

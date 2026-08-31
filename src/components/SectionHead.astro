@@ -1,0 +1,15 @@
+---
+interface Props {
+  title: string;
+  /** Right-aligned monospace counter, e.g. "06 ENTRIES" */
+  count?: string;
+  id?: string;
+}
+const { title, count, id } = Astro.props;
+---
+
+<div class="head">
+  <h2 id={id}>{title}</h2>
+  <span class="fill"></span>
+  {count && <span class="cnt">{count}</span>}
+</div>

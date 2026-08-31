@@ -1,0 +1,43 @@
+---
+import Base from '../../layouts/Base.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import NoteList from '../../components/NoteList.astro';
+import { getNotes, tagIndex, type Note } from '../../lib/notes';
+
+export async function getStaticPaths() {
+  const notes = await getNotes();
+  return tagIndex(notes).map((entry) => ({
+    params: { tag: entry.slug },
+    props: { tag: entry.tag, notes: entry.notes },
+  }));
+}
+
+interface Props {
+  tag: string;
+  notes: Note[];
+}
+const { tag, notes } = Astro.props;
+---
+
+<Base
+  title={`#${tag}`}
+  description={`Notes tagged ${tag}.`}
+  context={`TAG / ${tag.toUpperCase()}`}
+>
+  <section class="panel">
+    <span class="lbl">Tag</span>
+    <h1 class="display" style="font-size:clamp(28px,4.6vw,44px)">#{tag}</h1>
+    <div class="rule-y"></div>
+    <p class="lede">
+      {notes.length} {notes.length === 1 ? 'note' : 'notes'} tagged <code>{tag}</code>.
+    </p>
+  </section>
+
+  <section class="panel mt">
+    <SectionHead title="Entries" count={`${String(notes.length).padStart(2, '0')}`} />
+    <NoteList notes={notes} />
+    <div class="btn-row" style="margin-top:16px">
+      <a class="btn" href="/notes/">← All notes</a>
+    </div>
+  </section>
+</Base>

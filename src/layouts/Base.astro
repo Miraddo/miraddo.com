@@ -1,0 +1,129 @@
+---
+import '../styles/global.css';
+import { site, nav, links, languages } from '../lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Shown in the top strip next to the name. Defaults to the role. */
+  context?: string;
+  noindex?: boolean;
+}
+
+const { title, description, context, noindex = false } = Astro.props;
+
+const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}, ${site.location}`;
+const pageDescription = description ?? site.description;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
+// Absolute URL required: LinkedIn and X reject relative og:image paths.
+const ogImage = new URL('/og.png', Astro.site ?? site.url).href;
+const path = Astro.url.pathname;
+const year = new Date().getFullYear();
+
+// 'page' is reserved for the exact page. A note page is *within* the Notes
+// section, not the Notes page, so it gets aria-current="true" instead.
+const currentState = (href: string): 'page' | 'true' | undefined => {
+  if (path === href || path === `${href}/`) return 'page';
+  if (href !== '/' && path.startsWith(href)) return 'true';
+  return undefined;
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    {!noindex && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name} — ${site.role}, ${site.location}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${site.name} — Notes`} href="/rss.xml" />
+    <link rel="preload" href="/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
+    <meta name="theme-color" content="#0f2233" />
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: site.name,
+        alternateName: site.handle,
+        url: site.url,
+        email: site.email,
+        jobTitle: site.role,
+        worksFor: { '@type': 'Organization', name: site.company },
+        address: { '@type': 'PostalAddress', addressLocality: 'Hamburg', addressCountry: 'DE' },
+        sameAs: links.filter((l) => l.href.startsWith('http')).map((l) => l.href),
+      })}
+    />
+  </head>
+
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <div class="wrap">
+      <header class="strip">
+        <a href="/"><span class="lbl">{site.name.toUpperCase()}</span></a>
+        <span class="sep"></span>
+        <span class="lbl">{context ?? site.locationShort}</span>
+        <span class="sep"></span>
+        <span class="lbl live"><i></i>{site.status.toUpperCase()}</span>
+        <nav aria-label="Primary">
+          {
+            nav.map((item) => (
+              <a href={item.href} aria-current={currentState(item.href)}>
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+      </header>
+
+      <main id="main">
+        <slot />
+      </main>
+
+      <footer class="fblock">
+        <span>© {year} {site.name.toUpperCase()} · {site.locationShort}</span>
+        <span>
+          {
+            languages.map((l, i) => (
+              <>
+                {i > 0 && ' · '}
+                <span lang={l.code} dir={l.rtl ? 'rtl' : undefined}>{l.native}</span>
+              </>
+            ))
+          }
+        </span>
+        <span>
+          {
+            links.map((l, i) => (
+              <>
+                {i > 0 && ' · '}
+                <a href={l.href} rel={l.href.startsWith('http') ? 'me noopener' : undefined}>
+                  {l.short}
+                </a>
+              </>
+            ))
+          }
+        </span>
+      </footer>
+    </div>
+  </body>
+</html>

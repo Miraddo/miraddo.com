@@ -1,0 +1,136 @@
+---
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { site, timeline, languages, certifications, teaching } from '../lib/site';
+---
+
+<Base
+  title="About"
+  description="Milad Poshtdari — Go and systems engineer in Hamburg, IT consultant at Lufthansa Industry Solutions."
+  context="ABOUT"
+>
+  <section class="panel">
+    <span class="lbl">About</span>
+    <h1 class="display" style="font-size:clamp(30px,5vw,52px)">Who I am</h1>
+    <div class="rule-y"></div>
+    <div class="prose">
+      <p>
+        I build and improve services: large-scale web applications and enterprise systems, the
+        kind that have to keep working while nobody is watching. Today that happens as an IT
+        consultant at <strong>{site.company}</strong> in {site.location} — where the systems are
+        real, the constraints are real, and the deadlines belong to someone else.
+      </p>
+      <p>
+        Before Hamburg there was Tehran, and a backend developer who kept wanting to know what
+        the standard library was actually doing. That question never went away. It is why I write
+        C for fun, why I read the Go scheduler instead of only using it, and why I went back to
+        university at Universität zu Lübeck while working full time.
+      </p>
+      <blockquote>{site.motto}</blockquote>
+      <p>
+        That line on my GitHub profile is not anti-tooling. It is a preference for understanding
+        the thing I am shipping. Tools that make me faster are welcome. Tools that make me faster
+        at producing code I could not explain are not.
+      </p>
+    </div>
+  </section>
+
+  <div class="grid g-side mt">
+    <section class="panel">
+      <SectionHead title="Trajectory" />
+      {
+        timeline.map((item) => (
+          <div class="tl">
+            <span class="tl-year mono">{item.year}</span>
+            <div>
+              <div class="tl-title">{item.title}</div>
+              <div class="mute" style="font-size:14px">
+                {item.detail}
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </section>
+
+    <div class="stack-gap">
+      <section class="panel">
+        <SectionHead title="Languages" />
+        {
+          languages.map((l) => (
+            <div class="lg">
+              <span class="k">{l.level}</span>
+              <span>
+                {l.name} <span class="mute">· {l.native}</span>
+              </span>
+            </div>
+          ))
+        }
+      </section>
+
+      <section class="panel">
+        <SectionHead title="Certifications" count={`${certifications.length}`} />
+        <div class="chips">
+          {certifications.map((c) => <span class="chip" title={c.issuer}>{c.name}</span>)}
+        </div>
+        <p class="mute" style="font-size:12px;margin-top:10px">
+          Ardan Labs for the Go, Docker, and Kubernetes track.
+        </p>
+      </section>
+    </div>
+  </div>
+
+  <section class="panel mt">
+    <SectionHead title={teaching.headline} />
+    <div class="prose">
+      {teaching.body.map((line) => <p>{line}</p>)}
+      <p>
+        Teaching is the fastest way to find the holes in your own understanding. It is also the
+        reason I care about documentation in languages other than English: the barrier to entry in
+        this field is often linguistic before it is technical.
+      </p>
+    </div>
+  </section>
+
+  <section class="panel panel-dark mt">
+    <span class="lbl">Next</span>
+    <h2 style="font-size:22px;font-weight:600;margin:8px 0 6px">Where this is going</h2>
+    <p style="max-width:60ch">
+      Deeper into compilers and runtime internals, and further into the systems layer generally.
+      The long-term interest is the same one that started it: understanding the machine all the
+      way down.
+    </p>
+    <div class="btn-row" style="margin-top:16px">
+      <a class="btn btn-solid" href="/now/">What I'm doing now →</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .tl {
+    display: grid;
+    grid-template-columns: 108px 1fr;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .tl:last-child {
+    border-bottom: 0;
+  }
+  .tl-year {
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    color: var(--yellow-deep);
+    font-weight: 700;
+    padding-top: 3px;
+  }
+  .tl-title {
+    font-weight: 600;
+  }
+  @media (max-width: 620px) {
+    .tl {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+  }
+</style>

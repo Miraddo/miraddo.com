@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import { nav } from '../lib/site';
+---
+
+<Base title="404" description="Page not found." context="ERROR / 404" noindex>
+  <section class="panel">
+    <span class="lbl">Error 404 · Route not found</span>
+    <h1 class="display" style="font-size:clamp(38px,7vw,72px)">404</h1>
+    <div class="rule-y"></div>
+    <p class="lede">
+      No page at <code>{Astro.url.pathname}</code>. Either it moved, or it was never written.
+      Both are recoverable.
+    </p>
+    <div class="btn-row" style="margin-top:20px">
+      {nav.map((item) => <a class="btn" href={item.href}>{item.label}</a>)}
+    </div>
+  </section>
+</Base>

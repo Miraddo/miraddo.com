@@ -1,0 +1,135 @@
+---
+import Base from '../../layouts/Base.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import NoteList from '../../components/NoteList.astro';
+import SystemMap from '../../components/SystemMap.astro';
+import { getNotes, buildGraph, tagIndex, GRAPH_THRESHOLD } from '../../lib/notes';
+
+const notes = await getNotes();
+const graph = await buildGraph(notes);
+const tags = tagIndex(notes);
+
+// The map earns its place at GRAPH_THRESHOLD notes. Below that the list is
+// both more useful and more honest.
+const showMap = notes.length >= GRAPH_THRESHOLD;
+const remaining = GRAPH_THRESHOLD - notes.length;
+
+const articles = notes.filter((n) => n.data.kind === 'article');
+const shortNotes = notes.filter((n) => n.data.kind === 'note');
+---
+
+<Base
+  title="Notes"
+  description="Linked notes on Go, systems, networks, and the parts of software worth writing down."
+  context="NOTES / ZETTELKASTEN"
+>
+  <section class="panel">
+    <span class="lbl">Notes</span>
+    <h1 class="display" style="font-size:clamp(30px,5vw,50px)">Notes</h1>
+    <div class="rule-y"></div>
+    <p class="lede">
+      Not a blog. Atomic notes that link to each other — on Go, systems, networks, and the parts
+      of software worth writing down. Every note lists what it points at, what points back, and
+      what it is related to.
+    </p>
+  </section>
+
+  <div class="grid g4 mt">
+    <div class="panel readout">
+      <span class="lbl">Notes</span><div class="num">{notes.length}</div>
+    </div>
+    <div class="panel readout">
+      <span class="lbl">Links</span><div class="num">{graph.edges.length}</div>
+    </div>
+    <div class="panel readout">
+      <span class="lbl">Tags</span><div class="num">{tags.length}</div>
+    </div>
+    <div class="panel readout">
+      <span class="lbl">Unwritten</span><div class="num">{graph.orphans.length}</div>
+      <div class="fine">Linked but not yet written</div>
+    </div>
+  </div>
+
+  {
+    showMap ? (
+      <section class="panel mt">
+        <SectionHead title="System Map" count={`${graph.nodes.length} NODES · ${graph.edges.length} LINKS`} />
+        <SystemMap graph={graph} />
+      </section>
+    ) : (
+      <section class="panel mt">
+        <SectionHead title="System Map" count="LOCKED" />
+        <div class="empty">
+          <span class="lbl">Map unlocks at {GRAPH_THRESHOLD} notes</span>
+          <p>
+            {remaining} more {remaining === 1 ? 'note' : 'notes'} to go. A graph of a handful of
+            dots says nothing that the list below does not say better.
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    tags.length > 0 && (
+      <section class="panel mt">
+        <SectionHead title="Tags" count={`${tags.length} TOTAL`} />
+        <div class="chips">
+          {tags.map((t) => (
+            <a class="chip" href={`/tags/${t.slug}/`}>
+              #{t.tag} <span class="mute">{t.notes.length}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    articles.length > 0 && (
+      <section class="panel mt">
+        <SectionHead title="Articles" count={`${String(articles.length).padStart(2, '0')}`} />
+        <NoteList notes={articles} />
+      </section>
+    )
+  }
+
+  {
+    shortNotes.length > 0 && (
+      <section class="panel mt">
+        <SectionHead title={articles.length > 0 ? 'Notes' : 'All entries'} count={String(shortNotes.length).padStart(2, '0')} />
+        <NoteList notes={shortNotes} />
+      </section>
+    )
+  }
+
+  {
+    notes.length === 0 && (
+      <section class="panel mt">
+        <SectionHead title="All entries" count="00" />
+        <NoteList
+          notes={[]}
+          emptyLabel="Nothing published yet"
+          emptyText="The system is built and the first notes are being written. Follow along on GitHub in the meantime."
+        />
+      </section>
+    )
+  }
+
+  {
+    graph.orphans.length > 0 && (
+      <section class="panel mt">
+        <SectionHead title="Linked but unwritten" count={`${graph.orphans.length} PENDING`} />
+        <p class="mute" style="margin-bottom:12px;font-size:14px">
+          Notes referenced from somewhere on this site that do not exist yet. The backlog, kept
+          visible rather than hidden.
+        </p>
+        <div class="chips">
+          {graph.orphans.map((slug) => (
+            <span class="chip">{slug}</span>
+          ))}
+        </div>
+      </section>
+    )
+  }
+</Base>

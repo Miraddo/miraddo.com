@@ -1,0 +1,115 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Connections from '../../components/Connections.astro';
+import {
+  tagSlug,
+  getNotes,
+  buildGraph,
+  backlinksFor,
+  outboundFor,
+  relatedFor,
+  formatDate,
+  isoDate,
+} from '../../lib/notes';
+
+export async function getStaticPaths() {
+  const notes = await getNotes();
+  return notes.map((note) => ({ params: { slug: note.id }, props: { note } }));
+}
+
+const { note } = Astro.props;
+const { Content, headings } = await render(note);
+
+const all = await getNotes();
+const graph = await buildGraph(all);
+
+const outbound = outboundFor(graph, note.id, all);
+const backlinks = backlinksFor(graph, note.id, all);
+const related = relatedFor(graph, note, all);
+
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const kind = note.data.kind === 'article' ? 'ARTICLE' : 'NOTE';
+---
+
+<Base title={note.data.title} description={note.data.summary} context={`${kind} · ${isoDate(note.data.date)}`}>
+  <article class="panel">
+    <span class="lbl">
+      {kind} · {formatDate(note.data.date)}
+      {note.data.updated && ` · UPDATED ${formatDate(note.data.updated)}`}
+      {note.data.draft && ' · DRAFT'}
+    </span>
+    <h1 class="title">{note.data.title}</h1>
+    {note.data.summary && <p class="lede">{note.data.summary}</p>}
+    <div class="rule-y"></div>
+
+    {
+      note.data.tags.length > 0 && (
+        <div class="chips" style="margin-bottom:22px">
+          {note.data.tags.map((tag) => (
+            <a class="chip" href={`/tags/${tagSlug(tag)}/`}>
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )
+    }
+
+    {
+      toc.length > 2 && (
+        <nav class="toc" aria-label="On this page">
+          <span class="lbl">On this page</span>
+          <ol>
+            {toc.map((h) => (
+              <li data-depth={h.depth}>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+
+  <Connections outbound={outbound} backlinks={backlinks} related={related} />
+
+  <div class="panel mt">
+    <a class="btn" href="/notes/">← All notes</a>
+  </div>
+</Base>
+
+<style>
+  .title {
+    font-size: clamp(28px, 4.4vw, 44px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin: 10px 0 12px;
+  }
+  .toc {
+    border-left: 2px solid var(--yellow);
+    padding: 4px 0 4px 16px;
+    margin: 0 0 26px;
+    background: var(--panel-2);
+  }
+  .toc ol {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+  }
+  .toc li {
+    font-size: 13.5px;
+    padding: 2px 0;
+  }
+  .toc li[data-depth='3'] {
+    padding-left: 16px;
+    color: var(--mute);
+  }
+  .toc a:hover {
+    color: var(--cyan);
+  }
+</style>

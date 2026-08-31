@@ -1,0 +1,162 @@
+---
+import { getCollection } from 'astro:content';
+import { site } from '../lib/site';
+import Base from '../layouts/Base.astro';
+import SectionHead from '../components/SectionHead.astro';
+import ProjectManifest from '../components/ProjectManifest.astro';
+
+const all = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+
+const active = all.filter((p) => p.data.status === 'active' || p.data.status === 'wip');
+const settled = all.filter((p) => p.data.status === 'stable' || p.data.status === 'live');
+const planned = all.filter((p) => p.data.status === 'planned');
+const archived = all.filter((p) => p.data.status === 'archived');
+
+const totalStars = all.reduce((n, p) => n + p.data.stars, 0);
+const langs = [...new Set(all.map((p) => p.data.language))];
+---
+
+<Base
+  title="Projects"
+  description="Open source work by Milad Poshtdari — Go, C, networking, and systems tooling."
+  context="PROJECTS"
+>
+  <section class="panel">
+    <span class="lbl">Projects</span>
+    <h1 class="display" style="font-size:clamp(30px,5vw,52px)">What I build</h1>
+    <div class="rule-y"></div>
+    <p class="lede">
+      Open source, mostly Go and C. Written to be read, not only to run. These are the
+      {all.length} worth pointing at; all {site.publicRepos} public repositories live on
+      <a href="https://github.com/miraddo" rel="noopener" style="border-bottom:1px solid var(--yellow)">GitHub</a>.
+      Anything marked <strong>planned</strong> is a repository with no implementation yet — the
+      intent is stated, not the code.
+    </p>
+  </section>
+
+  <div class="grid g4 mt">
+    <div class="panel readout"><span class="lbl">Listed</span><div class="num">{all.length}</div></div>
+    <div class="panel readout"><span class="lbl">Public repos</span><div class="num">{site.publicRepos}</div></div>
+    <div class="panel readout"><span class="lbl">Stars</span><div class="num">{totalStars}</div></div>
+    <div class="panel readout">
+      <span class="lbl">Languages</span><div class="num">{langs.length}</div>
+      <div class="fine">{langs.join(' · ')}</div>
+    </div>
+  </div>
+
+  {
+    active.length > 0 && (
+      <section class="panel mt">
+        <SectionHead title="Active" count={`${String(active.length).padStart(2, '0')} ENTRIES`} />
+        <ProjectManifest projects={active} showStatus />
+      </section>
+    )
+  }
+
+  {
+    settled.length > 0 && (
+      <section class="panel mt">
+        <SectionHead title="Stable & Shipped" count={`${String(settled.length).padStart(2, '0')} ENTRIES`} />
+        <ProjectManifest projects={settled} showStatus />
+      </section>
+    )
+  }
+
+  {
+    planned.length > 0 && (
+      <section class="panel mt">
+        <SectionHead title="Planned" count={`${String(planned.length).padStart(2, '0')} ENTRIES`} />
+        <p class="mute" style="margin-bottom:12px;font-size:14px">
+          Repositories that exist but hold no implementation yet. Listed so the intent is on the
+          record, not to imply working software.
+        </p>
+        <ProjectManifest projects={planned} showStatus />
+      </section>
+    )
+  }
+
+  {
+    archived.length > 0 && (
+      <section class="panel mt">
+        <SectionHead title="Archived" count={`${String(archived.length).padStart(2, '0')} ENTRIES`} />
+        <ProjectManifest projects={archived} showStatus />
+      </section>
+    )
+  }
+
+  <section class="panel mt">
+    <SectionHead title="Detail" count="LONG FORM" />
+    <div class="detail-grid">
+      {
+        all.map((p) => (
+          <article class="dcard">
+            <div class="dhead">
+              <h3>{p.data.title}</h3>
+              <span class="m mono">
+                {p.data.language} · {p.data.stars > 0 ? `★ ${p.data.stars}` : p.data.status.toUpperCase()}
+              </span>
+            </div>
+            <p>{p.data.summary}</p>
+            <div class="chips">
+              {p.data.tags.map((t) => (
+                <span class="chip">{t}</span>
+              ))}
+            </div>
+            <div class="btn-row" style="margin-top:12px">
+              {p.data.repo && (
+                <a class="btn" href={p.data.repo} rel="noopener">
+                  SOURCE<span class="sr-only"> — {p.data.title} on GitHub</span>
+                </a>
+              )}
+              {p.data.url && (
+                <a class="btn" href={p.data.url} rel="noopener">
+                  LIVE<span class="sr-only"> — visit {p.data.title}</span>
+                </a>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<style>
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap);
+  }
+  .dcard {
+    border: 1px solid var(--line);
+    background: var(--panel-2);
+    padding: 16px;
+  }
+  .dhead {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .dhead h3 {
+    font-size: 17px;
+    font-weight: 700;
+  }
+  .dhead .m {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--mute);
+    white-space: nowrap;
+  }
+  .dcard p {
+    color: var(--navy-2);
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 820px) {
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
