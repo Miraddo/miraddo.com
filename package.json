@@ -3,17 +3,25 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
-  "description": "Personal site of Milad Poshtdari — miraddo.com",
+  "description": "Personal site of Milad Poshtdari \u2014 miraddo.com",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "test": "node --test \"test/**/*.test.*\"",
+    "rollback": "bash deploy/rollback.sh",
+    "deploy": "bash deploy/deploy.sh",
+    "og": "node deploy/make-og.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.12",
     "@astrojs/sitemap": "^3.6.0",
     "astro": "^5.14.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^5.9.3"
   }
 }

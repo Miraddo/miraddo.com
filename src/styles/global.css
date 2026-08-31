@@ -181,7 +181,10 @@ textarea:focus-visible {
 .g2 { grid-template-columns: repeat(2, 1fr); }
 .g3 { grid-template-columns: repeat(3, 1fr); }
 .g4 { grid-template-columns: repeat(4, 1fr); }
-.g-side { grid-template-columns: 1fr 320px; }
+.g-side { grid-template-columns: minmax(0, 1fr) 320px; }
+/* Grid items default to min-width:auto, so a wide child stops 1fr tracks from
+   ever becoming equal. */
+.grid > * { min-width: 0; }
 .stack-gap { display: grid; gap: var(--gap); }
 
 @media (max-width: 900px) {
@@ -205,8 +208,14 @@ textarea:focus-visible {
 }
 .strip .lbl { color: rgba(255, 255, 255, 0.55); }
 .strip .sep { width: 1px; height: 14px; background: rgba(255, 255, 255, 0.2); flex: none; }
+/* Below the wrap point the separators orphan at the end of a line, leaving a
+   stray rule with nothing after it. */
+@media (max-width: 560px) {
+  .strip .sep { display: none; }
+  .strip { gap: 8px 12px; }
+}
 .strip nav { margin-left: auto; display: flex; gap: 16px; flex-wrap: wrap; }
-.strip nav a { color: #cfd9e0; font-size: 12.5px; font-weight: 500; }
+.strip nav a { color: #cfd9e0; font-size: 12.5px; font-weight: 500; display: inline-block; padding-block: 5px; }
 .strip nav a:hover { color: var(--yellow); }
 .strip nav a[aria-current='page'] {
   color: var(--yellow);
@@ -377,6 +386,14 @@ a.chip:hover .mute { color: rgba(255, 255, 255, 0.75); }
 @media (max-width: 620px) {
   .entry { grid-template-columns: 1fr; gap: 3px; }
 }
+/* Container queries: these components sit inside half-width .g2 cells, so a
+   viewport media query is the wrong axis — at 700px viewport the cell is only
+   ~340px and the old rule left a 92px date column beside a 168px summary. */
+.panel { container-type: inline-size; }
+@container (max-width: 420px) {
+  .entry { grid-template-columns: 1fr; gap: 3px; }
+  .lg { grid-template-columns: 1fr; gap: 2px; }
+}
 
 /* ── empty state: designed, not broken ───────────────────────────── */
 .empty {
@@ -394,13 +411,18 @@ a.chip:hover .mute { color: rgba(255, 255, 255, 0.75); }
 /* ── key/value legend ────────────────────────────────────────────── */
 .lg {
   display: grid;
-  grid-template-columns: 132px 1fr;
+  /* minmax(0, …) on BOTH tracks: a fixed key column plus an unbreakable token
+     like an email address otherwise sets a min-content floor that no 1fr can
+     shrink under, which pushed the .g2 columns asymmetric and forced 3px of
+     horizontal page scroll in a narrow band above the 620px breakpoint. */
+  grid-template-columns: minmax(0, 132px) minmax(0, 1fr);
   gap: 10px;
   font-size: 14px;
   padding: 7px 0;
   border-bottom: 1px dotted var(--line-2);
 }
 .lg:last-child { border-bottom: 0; }
+.lg > span:last-child { overflow-wrap: anywhere; }
 .lg .k {
   font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em;
   text-transform: uppercase; color: var(--mute); padding-top: 3px;
@@ -421,7 +443,7 @@ a.chip:hover .mute { color: rgba(255, 255, 255, 0.75); }
   font-size: 11px;
   letter-spacing: 0.06em;
 }
-.fblock a { color: #cfd9e0; }
+.fblock a { color: #cfd9e0; display: inline-block; padding-block: 6px; margin-block: -6px; }
 .fblock a:hover { color: var(--yellow); }
 
 /* ── utility ─────────────────────────────────────────────────────── */
@@ -431,6 +453,14 @@ a.chip:hover .mute { color: rgba(255, 255, 255, 0.75); }
 .sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0;
   overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* Coarse pointers need real hit area, not just a visible label. */
+@media (pointer: coarse) {
+  .strip nav a { padding-block: 9px; }
+  .fblock a { padding-block: 10px; margin-block: -10px; }
+  .chip { padding: 6px 10px; }
+  .manifest .n a { display: inline-block; padding-block: 5px; }
 }
 
 @media print {

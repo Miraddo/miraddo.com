@@ -52,4 +52,13 @@ const { projects, showStatus = false } = Astro.props;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
+  /* `white-space: nowrap` on the project name reserves the width of the
+     longest name at EVERY viewport, and auto table layout dumps the whole
+     deficit on Description — 92px, one word per line, on every phone.
+     Let the name wrap below the phone breakpoint instead. */
+  @media (max-width: 520px) {
+    .scroller :global(.manifest .n) {
+      white-space: normal;
+    }
+  }
 </style>

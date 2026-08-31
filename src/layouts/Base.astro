@@ -13,10 +13,16 @@ interface Props {
 const { title, description, context, noindex = false } = Astro.props;
 
 const pageTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.role}, ${site.location}`;
-const pageDescription = description ?? site.description;
+// `||` not `??`: a note with `summary: ''` (the schema default) would
+// otherwise ship an empty description and a blank social-card subtitle.
+const pageDescription = description || site.description;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url).href;
 // Absolute URL required: LinkedIn and X reject relative og:image paths.
 const ogImage = new URL('/og.png', Astro.site ?? site.url).href;
+// Stamped by deploy.sh so post-deploy verification can prove the live site is
+// THIS release. A 200 alone cannot: a failed symlink swap serves the previous
+// release with a perfectly healthy 200 on every URL.
+const release = process.env.MIRADDO_RELEASE ?? 'dev';
 const path = Astro.url.pathname;
 const year = new Date().getFullYear();
 
@@ -56,8 +62,10 @@ const currentState = (href: string): 'page' | 'true' | undefined => {
     <link rel="preload" href="/fonts/space-grotesk.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/jetbrains-mono.woff2" as="font" type="font/woff2" crossorigin />
     <meta name="theme-color" content="#0f2233" />
+    <meta name="release" content={release} />
 
     <script
+      is:inline
       type="application/ld+json"
       set:html={JSON.stringify({
         '@context': 'https://schema.org',

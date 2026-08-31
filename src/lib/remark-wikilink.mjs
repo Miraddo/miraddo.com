@@ -5,7 +5,7 @@ import { visit } from 'unist-util-visit';
 const NOTES_DIR = join(process.cwd(), 'src', 'content', 'notes');
 const WIKILINK = /\[\[([^\]|#]+)(?:#([^\]|]+))?(?:\|([^\]]+))?\]\]/g;
 
-function slugify(value) {
+export function slugify(value) {
   return value
     .trim()
     .toLowerCase()
@@ -22,31 +22,50 @@ function slugify(value) {
  * nothing renders as a dimmed span rather than a broken link — the idea is
  * recorded without the link rotting.
  */
-function linkableSlugs(includeDrafts) {
+function linkableSlugs(includeDrafts, notesDir = NOTES_DIR) {
   // alias -> canonical note id. Must accept the same aliases that
   // buildGraph()'s resolver accepts (id, lowercased id, slugified id,
   // slugified title) or the rendered links and the link graph disagree:
   // the graph would count an edge the page renders as "not written yet".
   const aliases = new Map();
-  if (!existsSync(NOTES_DIR)) return aliases;
+  if (!existsSync(notesDir)) return aliases;
 
-  for (const file of readdirSync(NOTES_DIR)) {
-    if (!file.endsWith('.md')) continue;
+  // Recursive: the collection glob is `**/*.md`, so a note may live in a
+  // subdirectory and its Astro id is the POSIX-separated path relative to
+  // NOTES_DIR. A flat readdir here made every foldered note unlinkable in
+  // prose while the graph resolved it happily — the same page then showed a
+  // link as dead that the connections panel showed as live.
+  const walk = (dir, prefix = '') => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const abs = join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(abs, `${prefix}${entry.name}/`);
+        continue;
+      }
+      if (!entry.name.endsWith('.md')) continue;
 
-    const source = readFileSync(join(NOTES_DIR, file), 'utf8');
-    const frontmatter = source.split(/^---\s*$/m)[1] ?? '';
-    if (!includeDrafts && /^\s*draft:\s*true\s*$/m.test(frontmatter)) continue;
+      const source = readFileSync(abs, 'utf8');
+      const frontmatter = source.split(/^---\s*$/m)[1] ?? '';
+      if (!includeDrafts && /^\s*draft:\s*true\s*$/m.test(frontmatter)) continue;
 
-    const id = file.replace(/\.md$/, '');
-    aliases.set(id, id);
-    aliases.set(id.toLowerCase(), id);
-    aliases.set(slugify(id), id);
+      const id = `${prefix}${entry.name.replace(/\.md$/, '')}`;
+      aliases.set(id, id);
+      aliases.set(id.toLowerCase(), id);
+      aliases.set(slugify(id), id);
 
-    const title = frontmatter.match(/^\s*title:\s*(.+?)\s*$/m)?.[1]?.replace(/^['"]|['"]$/g, '');
-    if (title) aliases.set(slugify(title), id);
-  }
+      const title = frontmatter.match(/^\s*title:\s*(.+?)\s*$/m)?.[1]?.replace(/^['"]|['"]$/g, '');
+      if (title) aliases.set(slugify(title), id);
+    }
+  };
+  walk(notesDir);
   return aliases;
 }
+
+/**
+ * Exported so a test can assert this alias set matches the one graph.ts builds.
+ * `notesDir` is injectable purely so that test can use a fixture directory.
+ */
+export { linkableSlugs };
 
 /**
  * remark plugin: [[slug]] and [[slug|label]] become internal note links.

@@ -10,7 +10,10 @@ const formatted = updated.toLocaleDateString('en-GB', {
   month: 'long',
   day: 'numeric',
 });
-const daysOld = Math.floor((Date.now() - updated.valueOf()) / 86_400_000);
+// Deliberately NOT a relative age. This page is static: a "0 days ago"
+// computed at build time freezes into the HTML and keeps claiming "today"
+// forever. The absolute date cannot rot; a relative one silently does.
+const buildDate = new Date().toISOString().slice(0, 10);
 ---
 
 <Base
@@ -73,9 +76,11 @@ const daysOld = Math.floor((Date.now() - updated.valueOf()) / 86_400_000);
 
   <section class="panel mt">
     <span class="lbl">Freshness</span>
-    <p style="margin-top:8px">
-      This page was last updated <strong>{daysOld === 0 ? 'today' : `${daysOld} days ago`}</strong>.
-      Edit <code>src/lib/site.ts</code> to change it.
+    <div class="lg" style="margin-top:8px"><span class="k">Content dated</span><span>{now.updated}</span></div>
+    <div class="lg"><span class="k">Site built</span><span>{buildDate}</span></div>
+    <p class="mute" style="margin-top:10px;font-size:13.5px">
+      Both dates are absolute on purpose. A "last updated N days ago" computed when the site is
+      built freezes into the page and keeps claiming to be fresh long after it is not.
     </p>
   </section>
 </Base>

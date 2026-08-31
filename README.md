@@ -11,6 +11,8 @@ npm install
 npm run dev      # http://localhost:4321 — drafts visible
 npm run build    # -> dist/
 npm run preview  # serve the production build locally
+npm run check    # astro check (types + templates)
+npm test         # node --test over the graph and wikilink logic
 ```
 
 ## Where things live
@@ -24,6 +26,8 @@ npm run preview  # serve the production build locally
 | Design tokens and all styling | `src/styles/global.css` |
 | Link graph, backlinks, related | `src/lib/notes.ts` |
 | Wikilink parsing | `src/lib/remark-wikilink.mjs` |
+| Pure graph logic (unit tested) | `src/lib/graph.ts` |
+| Tests | `test/` |
 
 ## Writing a note
 
@@ -66,11 +70,23 @@ Builds, checks internal links (fatal) and external links (non-fatal), uploads a
 timestamped release, swaps the `current` symlink atomically, prunes to the last
 five releases, and verifies the live URLs. No restart, no reload, no downtime.
 
-Roll back to the previous release:
+`deploy.sh` gates on `astro check` and the test suite before it builds, stamps
+the release id into every page, and verifies after activation that the live HTML
+carries **that** stamp — a 200 alone cannot prove the swap worked, because a
+failed swap serves the previous release with a perfectly healthy 200.
+
+Roll back:
 
 ```bash
-ssh -i ~/.ssh/fluentx root@65.109.219.238 "cd /opt/miraddo && ls -1t releases | sed -n 2p | xargs -I{} ln -sfn releases/{} current"
+npm run rollback            # previous release
+npm run rollback -- --list  # what is available
 ```
+
+`rollback.sh` orders releases by name (`YYYYmmdd-HHMMSS` sorts chronologically)
+rather than by mtime — `tar -xz` rewrites mtimes from the local build, so mtime
+order is not deploy order. It resolves "previous" relative to what `current`
+actually points at, so consecutive rollbacks keep going back, and it exits 1
+loudly when there is no candidate rather than silently doing nothing.
 
 **Do not replace `/opt/miraddo/current`'s parent directory.** Caddy bind-mounts
 `/opt/miraddo`, and a bind mount is pinned to the inode it had at container
@@ -95,6 +111,20 @@ Regenerate the social card after changing the name, role, or palette:
 ```bash
 node deploy/make-og.mjs
 ```
+
+## Invariants worth knowing
+
+- **The two wikilink resolvers must agree.** `src/lib/graph.ts` resolves links
+  for the graph; `src/lib/remark-wikilink.mjs` resolves them for the rendered
+  HTML. They build their alias sets independently, so if they drift, a page
+  shows a link as "not written yet" while the connections panel at the foot of
+  the same page links to it. `test/wikilink.test.mjs` asserts the two sets are
+  identical, including for notes in subdirectories.
+- **`summary` is required** on every note. It is the meta description, the
+  social-card subtitle, the index subtitle and the RSS description at once.
+- **Nothing on `/now/` is relative.** A "last updated N days ago" computed at
+  build time freezes into static HTML and keeps claiming freshness forever, so
+  the page shows absolute dates only.
 
 ## Project status values
 
