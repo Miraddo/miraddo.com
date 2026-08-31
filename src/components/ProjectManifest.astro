@@ -11,54 +11,105 @@ const { projects, showStatus = false } = Astro.props;
 
 <div class="scroller">
   <table class="manifest">
-  <thead>
-    <tr>
-      <th scope="col">Project</th>
-      <th scope="col">Description</th>
-      <th scope="col">Lang</th>
-      {showStatus && <th scope="col">Status</th>}
-      <th scope="col" class="r">Stars</th>
-    </tr>
-  </thead>
-  <tbody>
-    {
-      projects.map((p) => (
-        <tr>
-          <td class="n">
-            {p.data.repo ? (
-              <a href={p.data.repo} rel="noopener">
-                {p.data.title}
-              </a>
-            ) : (
-              p.data.title
-            )}
-          </td>
-          <td class="d">{p.data.summary}</td>
-          <td class="m">{p.data.language}</td>
-          {showStatus && <td class="m">{p.data.status.toUpperCase()}</td>}
-          <td class="m r">{p.data.stars > 0 ? `★ ${p.data.stars}` : '—'}</td>
-        </tr>
-      ))
-    }
-  </tbody>
-</table>
+    <thead>
+      <tr>
+        <th scope="col">Project</th>
+        <th scope="col">Description</th>
+        <th scope="col">Lang</th>
+        {showStatus && <th scope="col">Status</th>}
+        <th scope="col" class="r">Stars</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        projects.map((p) => (
+          <tr>
+            <td class="n" data-label="Project">
+              {p.data.repo ? (
+                <a href={p.data.repo} rel="noopener">
+                  {p.data.title}
+                </a>
+              ) : (
+                p.data.title
+              )}
+            </td>
+            <td class="d" data-label="Description">{p.data.summary}</td>
+            <td class="m" data-label="Lang">{p.data.language}</td>
+            {showStatus && <td class="m" data-label="Status">{p.data.status.toUpperCase()}</td>}
+            <td class="m r" data-label="Stars">{p.data.stars > 0 ? `★ ${p.data.stars}` : '—'}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
 </div>
 
 <style>
-  /* The manifest is a real data table: at 320px its columns cannot compress
-     below ~330px without wrapping project names, so it scrolls inside its own
-     container rather than pushing the whole page sideways. */
+  /* Wide content scrolls inside its own box; the page body never scrolls. */
   .scroller {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-  /* `white-space: nowrap` on the project name reserves the width of the
-     longest name at EVERY viewport, and auto table layout dumps the whole
-     deficit on Description — 92px, one word per line, on every phone.
-     Let the name wrap below the phone breakpoint instead. */
-  @media (max-width: 520px) {
-    .scroller :global(.manifest .n) {
+
+  /* Below 560px there is no honest way to fit five columns. The three mono
+     columns reserve their content width and auto table layout dumps the entire
+     deficit on Description — the column people actually read — collapsing it to
+     ~92px and one word per line on every phone. Dropping `nowrap` from the name
+     was not enough; measured at 320px it stayed 92px.
+
+     So: stack each row into a labelled block. The markup is untouched — still a
+     table, still one row per project, still navigable by screen reader and
+     keyboard. Only the visual layout changes, and the header row is moved
+     off-screen rather than removed so the cells keep their accessible names. */
+  @media (max-width: 560px) {
+    .scroller :global(.manifest thead) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+    .scroller :global(.manifest),
+    .scroller :global(.manifest tbody),
+    .scroller :global(.manifest tr),
+    .scroller :global(.manifest td) {
+      display: block;
+      width: 100%;
+    }
+    .scroller :global(.manifest tr) {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 0;
+    }
+    .scroller :global(.manifest tr:last-child) {
+      border-bottom: 0;
+    }
+    .scroller :global(.manifest td) {
+      border: 0;
+      padding: 0 0 4px;
       white-space: normal;
+      text-align: left;
+    }
+    .scroller :global(.manifest td.n) {
+      font-size: 16px;
+    }
+    .scroller :global(.manifest td.d) {
+      color: var(--navy-2);
+      padding-bottom: 8px;
+    }
+    /* The three metadata cells read as one labelled line under the text. */
+    .scroller :global(.manifest td.m) {
+      display: inline-block;
+      width: auto;
+      margin-right: 14px;
+      padding-bottom: 0;
+    }
+    .scroller :global(.manifest td.m)::before {
+      content: attr(data-label) ' ';
+      color: var(--faint);
+      letter-spacing: 0.12em;
+      font-size: 10px;
+      text-transform: uppercase;
     }
   }
 </style>
