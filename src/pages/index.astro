@@ -5,6 +5,7 @@ import SectionHead from '../components/SectionHead.astro';
 import Readout from '../components/Readout.astro';
 import ProjectManifest from '../components/ProjectManifest.astro';
 import NoteList from '../components/NoteList.astro';
+import ExternalWriting from '../components/ExternalWriting.astro';
 import { site, links, now, stack, teaching, languages } from '../lib/site';
 import { getNotes } from '../lib/notes';
 
@@ -86,15 +87,18 @@ const totalStars = allProjects.reduce((n, p) => n + p.data.stars, 0);
     </section>
 
     <section class="panel">
-      <SectionHead title="Writing" count="NOTES" />
-      <NoteList
-        notes={notes}
-        emptyLabel="No notes published yet"
-        emptyText="The notes system is built and waiting. First entries are being written."
-        showTags={false}
-      />
+      <SectionHead title="Writing" count="PUBLISHED" />
+      <ExternalWriting limit={3} showSummary={false} />
+      {
+        notes.length > 0 && (
+          <>
+            <span class="lbl" style="margin:18px 0 6px">Notes on this site</span>
+            <NoteList notes={notes.slice(0, 2)} showTags={false} />
+          </>
+        )
+      }
       <div class="btn-row" style="margin-top:16px">
-        <a class="btn" href="/notes/">All notes →</a>
+        <a class="btn" href="/notes/">All writing →</a>
         <a class="btn" href="/rss.xml">RSS</a>
       </div>
     </section>

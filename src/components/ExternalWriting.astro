@@ -1,0 +1,38 @@
+---
+import { externalByDate } from '../lib/writing';
+
+interface Props {
+  /** Cap the list; omit to show everything. */
+  limit?: number;
+  showSummary?: boolean;
+}
+const { limit, showSummary = true } = Astro.props;
+const items = limit ? externalByDate.slice(0, limit) : externalByDate;
+
+const fmt = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'short' });
+---
+
+<div>
+  {
+    items.map((article) => (
+      <a class="entry" href={article.url} rel="noopener">
+        <time class="dt" datetime={article.date}>
+          {fmt(article.date)}
+        </time>
+        <div>
+          <span class="ti">{article.title}</span>
+          {showSummary && <span class="sum mute">{article.summary}</span>}
+        </div>
+        <span class="tags">{article.venue} ↗</span>
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .sum {
+    display: block;
+    font-size: 13.5px;
+  }
+</style>

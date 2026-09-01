@@ -3,6 +3,8 @@ import Base from '../../layouts/Base.astro';
 import SectionHead from '../../components/SectionHead.astro';
 import NoteList from '../../components/NoteList.astro';
 import SystemMap from '../../components/SystemMap.astro';
+import ExternalWriting from '../../components/ExternalWriting.astro';
+import { externalByDate } from '../../lib/writing';
 import { getNotes, buildGraph, tagIndex, GRAPH_THRESHOLD } from '../../lib/notes';
 
 const notes = await getNotes();
@@ -19,34 +21,34 @@ const shortNotes = notes.filter((n) => n.data.kind === 'note');
 ---
 
 <Base
-  title="Notes"
-  description="Linked notes on Go, systems, networks, and the parts of software worth writing down."
-  context="NOTES / ZETTELKASTEN"
+  title="Writing"
+  description="Articles and linked notes on Go, systems, networks, AI, and the parts of software worth writing down."
+  context="WRITING / NOTES"
 >
   <section class="panel">
-    <span class="lbl">Notes</span>
-    <h1 class="display" style="font-size:clamp(30px,5vw,50px)">Notes</h1>
+    <span class="lbl">Writing</span>
+    <h1 class="display" style="font-size:clamp(30px,5vw,50px)">Writing</h1>
     <div class="rule-y"></div>
     <p class="lede">
-      Not a blog. Atomic notes that link to each other — on Go, systems, networks, and the parts
-      of software worth writing down. Every note lists what it points at, what points back, and
-      what it is related to.
+      Published articles, and a set of notes kept here as a Zettelkasten rather than a blog. The
+      notes link to each other: every one lists what it points at, what points back, and what it
+      is related to.
     </p>
   </section>
 
   <div class="grid g4 mt">
     <div class="panel readout">
-      <span class="lbl">Notes</span><div class="num">{notes.length}</div>
+      <span class="lbl">Published</span><div class="num">{externalByDate.length}</div>
+      <div class="fine">Articles, elsewhere</div>
+    </div>
+    <div class="panel readout">
+      <span class="lbl">Notes here</span><div class="num">{notes.length}</div>
     </div>
     <div class="panel readout">
       <span class="lbl">Links</span><div class="num">{graph.edges.length}</div>
     </div>
     <div class="panel readout">
       <span class="lbl">Tags</span><div class="num">{tags.length}</div>
-    </div>
-    <div class="panel readout">
-      <span class="lbl">Unwritten</span><div class="num">{graph.orphans.length}</div>
-      <div class="fine">Linked but not yet written</div>
     </div>
   </div>
 
@@ -81,6 +83,15 @@ const shortNotes = notes.filter((n) => n.data.kind === 'note');
             </a>
           ))}
         </div>
+      </section>
+    )
+  }
+
+  {
+    externalByDate.length > 0 && (
+      <section class="panel mt">
+        <SectionHead title="Published elsewhere" count={`${String(externalByDate.length).padStart(2, '0')}`} />
+        <ExternalWriting />
       </section>
     )
   }

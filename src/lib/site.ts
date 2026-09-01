@@ -25,6 +25,7 @@ export const site = {
 export const links = [
   { label: 'GitHub', short: 'GITHUB', href: 'https://github.com/miraddo', handle: '@miraddo' },
   { label: 'LinkedIn', short: 'LINKEDIN', href: 'https://linkedin.com/in/miraddo', handle: 'in/miraddo' },
+  { label: 'Medium', short: 'MEDIUM', href: 'https://medium.com/@miraddo', handle: '@miraddo' },
   { label: 'Email', short: 'EMAIL', href: 'mailto:hello@miraddo.com', handle: 'hello@miraddo.com' },
 ] as const;
 
@@ -33,7 +34,7 @@ export const nav = [
   { label: 'About', href: '/about/' },
   { label: 'Now', href: '/now/' },
   { label: 'Projects', href: '/projects/' },
-  { label: 'Notes', href: '/notes/' },
+  { label: 'Writing', href: '/notes/' },
   { label: 'Uses', href: '/uses/' },
   { label: 'Contact', href: '/contact/' },
 ] as const;
