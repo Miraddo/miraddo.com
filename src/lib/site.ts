@@ -6,7 +6,7 @@ export const site = {
   handle: 'miraddo',
   url: 'https://miraddo.com',
   title: 'Milad Poshtdari',
-  role: 'IT Consultant',
+  role: 'Senior IT Consultant',
   company: 'Lufthansa Industry Solutions',
   location: 'Hamburg, Germany',
   locationShort: 'HAMBURG · DE',
@@ -16,10 +16,10 @@ export const site = {
   shortTagline: 'Go and systems engineer in Hamburg.',
   motto: "I'd like to be a human coder, not an AI coder.",
   description:
-    'Milad Poshtdari (miraddo) — Go and systems engineer in Hamburg. IT consultant at Lufthansa Industry Solutions. Open source, writing, and teaching.',
+    'Milad Poshtdari (miraddo) — Go and systems engineer in Hamburg. Senior IT consultant at Lufthansa Industry Solutions. Open source, writing, and teaching.',
   status: 'Available for conversation',
   /** Single source of truth for the repo count. Referenced, never retyped. */
-  publicRepos: 44,
+  publicRepos: 45,
 } as const;
 
 export const links = [
@@ -118,7 +118,7 @@ export const timeline = [
   },
   {
     year: 'Now',
-    title: 'IT Consultant · Lufthansa Industry Solutions',
+    title: 'Senior IT Consultant · Lufthansa Industry Solutions',
     detail: 'Hamburg. Large-scale web applications and enterprise systems.',
   },
   {

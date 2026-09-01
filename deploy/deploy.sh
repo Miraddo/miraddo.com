@@ -59,6 +59,9 @@ node deploy/check-links.mjs
 echo "==> Checking external links (non-fatal)"
 node deploy/check-external.mjs || true
 
+echo "==> Checking site facts against GitHub (non-fatal)"
+node deploy/check-facts.mjs || true
+
 echo "==> Uploading"
 ssh_ "mkdir -p '$ROOT/releases/$RELEASE'"
 tar -cz -C dist . | ssh_ "tar -xz -C '$ROOT/releases/$RELEASE'"
