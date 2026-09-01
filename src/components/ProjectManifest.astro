@@ -36,7 +36,7 @@ const { projects, showStatus = false } = Astro.props;
             <td class="d" data-label="Description">{p.data.summary}</td>
             <td class="m" data-label="Lang">{p.data.language}</td>
             {showStatus && <td class="m" data-label="Status">{p.data.status.toUpperCase()}</td>}
-            <td class="m r" data-label="Stars">{p.data.stars > 0 ? `★ ${p.data.stars}` : '—'}</td>
+            <td class="m r" data-label="Stars">{`★ ${p.data.stars}`}</td>
           </tr>
         ))
       }
@@ -53,11 +53,11 @@ const { projects, showStatus = false } = Astro.props;
 
   /* Below 560px there is no honest way to fit five columns. The three mono
      columns reserve their content width and auto table layout dumps the entire
-     deficit on Description — the column people actually read — collapsing it to
+     deficit on Description, the column people actually read, collapsing it to
      ~92px and one word per line on every phone. Dropping `nowrap` from the name
      was not enough; measured at 320px it stayed 92px.
 
-     So: stack each row into a labelled block. The markup is untouched — still a
+     So: stack each row into a labelled block. The markup is untouched, still a
      table, still one row per project, still navigable by screen reader and
      keyboard. Only the visual layout changes, and the header row is moved
      off-screen rather than removed so the cells keep their accessible names. */

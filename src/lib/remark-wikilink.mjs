@@ -19,7 +19,7 @@ export function slugify(value) {
  * Existence on disk is not enough: drafts are excluded from the production
  * build by `getNotes()`, so linking to one would ship a 404. In dev, drafts do
  * get pages, so they count as resolvable there. A wikilink that resolves to
- * nothing renders as a dimmed span rather than a broken link — the idea is
+ * nothing renders as a dimmed span rather than a broken link, the idea is
  * recorded without the link rotting.
  */
 function linkableSlugs(includeDrafts, notesDir = NOTES_DIR) {
@@ -33,7 +33,7 @@ function linkableSlugs(includeDrafts, notesDir = NOTES_DIR) {
   // Recursive: the collection glob is `**/*.md`, so a note may live in a
   // subdirectory and its Astro id is the POSIX-separated path relative to
   // NOTES_DIR. A flat readdir here made every foldered note unlinkable in
-  // prose while the graph resolved it happily — the same page then showed a
+  // prose while the graph resolved it happily, the same page then showed a
   // link as dead that the connections panel showed as live.
   const walk = (dir, prefix = '') => {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {

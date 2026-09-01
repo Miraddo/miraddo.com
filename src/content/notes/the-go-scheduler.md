@@ -14,10 +14,10 @@ word doing the work is *cheap*, not *free*.
 
 Three things, and the names are worth learning properly:
 
-- **G** — a goroutine. A stack (starting small and growing), a program counter,
+- **G**, a goroutine. A stack (starting small and growing), a program counter,
   and scheduling state.
-- **M** — an OS thread. The thing the kernel actually schedules.
-- **P** — a processor: the right to execute Go code. There are `GOMAXPROCS` of
+- **M**, an OS thread. The thing the kernel actually schedules.
+- **P**, a processor: the right to execute Go code. There are `GOMAXPROCS` of
   them, and a P owns a local run queue of Gs.
 
 An M must hold a P to run Go code. That indirection is the whole design: it lets
@@ -38,7 +38,7 @@ predicts.
 ## The practical rule
 
 Unbounded `go func()` in a request path is a queue with no limit and no
-backpressure. Bound it — a worker pool, a semaphore, anything with a number in
+backpressure. Bound it, a worker pool, a semaphore, anything with a number in
 it. The number is the point: it forces you to know what the system can take.
 
 The same instinct applies one layer down, where

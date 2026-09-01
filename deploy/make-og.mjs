@@ -1,4 +1,4 @@
-// Render public/og.png (1200x630) — the social card for miraddo.com.
+// Render public/og.png (1200x630), the social card for miraddo.com.
 //
 //   node deploy/make-og.mjs
 //

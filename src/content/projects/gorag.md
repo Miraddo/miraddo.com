@@ -1,6 +1,6 @@
 ---
 title: goRAG
-summary: Planned — a retrieval-augmented generation backend in Go. Nothing committed yet.
+summary: Planned, a retrieval-augmented generation backend in Go. Nothing committed yet.
 language: Go
 stars: 0
 status: planned

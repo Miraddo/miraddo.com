@@ -1,6 +1,6 @@
 ---
 title: micromonitor
-summary: Planned — a small monitoring tool for when a full observability stack is more machinery than the thing being watched.
+summary: Planned, a small monitoring tool for when a full observability stack is more machinery than the thing being watched.
 language: Go
 stars: 0
 status: planned

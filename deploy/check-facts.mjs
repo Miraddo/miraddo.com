@@ -65,7 +65,7 @@ try {
   if (user && Number.isFinite(claimed) && user.public_repos !== claimed) {
     drift.push(
       `site.publicRepos says ${claimed}, GitHub says ${user.public_repos}` +
-        ` — update src/lib/site.ts`,
+        `, update src/lib/site.ts`,
     );
   }
 
@@ -100,7 +100,7 @@ try {
     if (!isPlanned && !isProse && codeFiles.length === 0) {
       drift.push(
         `${file}: status "${fm.status}" but the repo has no code files` +
-          ` (${files.length} file(s), all docs) — should this be "planned"?`,
+          ` (${files.length} file(s), all docs), should this be "planned"?`,
       );
     }
     if (isPlanned && codeFiles.length > 0) {

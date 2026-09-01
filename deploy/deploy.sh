@@ -12,8 +12,8 @@
 # /srv/miraddo-root/current.
 #
 # Why the parent, and why a symlink: a bind mount is resolved to an inode when
-# the container starts. Replacing the mounted directory itself — the obvious
-# `mv new old` atomic swap — leaves the container pointing at the old, now
+# the container starts. Replacing the mounted directory itself, the obvious
+# `mv new old` atomic swap, leaves the container pointing at the old, now
 # deleted, inode and every request 404s until the container is recreated. The
 # mounted inode (/opt/miraddo) must never change; only the symlink inside it
 # moves. That swap is atomic and needs no restart, no reload, no downtime.
@@ -45,11 +45,11 @@ echo "==> Building release $RELEASE"
 MIRADDO_RELEASE="$RELEASE" npm run build
 
 if [ ! -f dist/index.html ]; then
-  echo "!! dist/index.html missing — refusing to deploy an empty build" >&2
+  echo "!! dist/index.html missing, refusing to deploy an empty build" >&2
   exit 1
 fi
 grep -q "content=\"$RELEASE\"" dist/index.html || {
-  echo "!! release stamp missing from the build — verification would be blind" >&2
+  echo "!! release stamp missing from the build, verification would be blind" >&2
   exit 1
 }
 
@@ -68,7 +68,7 @@ tar -cz -C dist . | ssh_ "tar -xz -C '$ROOT/releases/$RELEASE'"
 
 # Refuse to point the symlink at a release that did not upload cleanly.
 ssh_ "test -f '$ROOT/releases/$RELEASE/index.html'" || {
-  echo "!! upload incomplete — leaving the current release in place" >&2
+  echo "!! upload incomplete, leaving the current release in place" >&2
   ssh_ "rm -rf '$ROOT/releases/$RELEASE'"
   exit 1
 }
@@ -96,7 +96,7 @@ for path in "${PATHS[@]}"; do
 
   case "$path" in
     # Only HTML carries the stamp. Never read a binary body into a shell
-    # variable — command substitution strips null bytes and warns.
+    # variable, command substitution strips null bytes and warns.
     *.xml|*.png|*.svg|*.txt|*.woff2)
       stamped="n/a" ;;
     *)

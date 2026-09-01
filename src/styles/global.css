@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════════
-   miraddo.com — "Flight Deck"
+   miraddo.com, "Flight Deck"
    Instrument-panel density. Every value labeled, every panel measured.
    Ground: warm grey. Structure: navy. Signal: yellow. Data: cyan.
    ══════════════════════════════════════════════════════════════════════ */
@@ -52,12 +52,12 @@
   /* type */
   --ink: #0f2233;
   --mute: #5d6d7a;
-  --faint: #5e676d; /* 5.16:1 on --panel, 4.63:1 on --ground — WCAG AA */
+  --faint: #5e676d; /* 5.16:1 on --panel, 4.63:1 on --ground, WCAG AA */
 
   --sans: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  /* rhythm — everything is a multiple of 8 */
+  /* rhythm, everything is a multiple of 8 */
   --u: 8px;
   --gap: 8px;
   --pad: 20px;
@@ -120,7 +120,7 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
-/* skip link — keyboard users land here first */
+/* skip link, keyboard users land here first */
 .skip {
   position: absolute;
   left: -9999px;
@@ -153,7 +153,7 @@ textarea:focus-visible {
   padding: var(--pad);
   position: relative;
 }
-/* corner tick marks — the cockpit gauge tell */
+/* corner tick marks, the cockpit gauge tell */
 .panel::before,
 .panel::after {
   content: '';
@@ -387,7 +387,7 @@ a.chip:hover .mute { color: rgba(255, 255, 255, 0.75); }
   .entry { grid-template-columns: 1fr; gap: 3px; }
 }
 /* Container queries: these components sit inside half-width .g2 cells, so a
-   viewport media query is the wrong axis — at 700px viewport the cell is only
+   viewport media query is the wrong axis, at 700px viewport the cell is only
    ~340px and the old rule left a 92px date column beside a 168px summary. */
 .panel { container-type: inline-size; }
 @container (max-width: 420px) {

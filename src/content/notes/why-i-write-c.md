@@ -1,6 +1,6 @@
 ---
 title: Why write C when the job is Go
-summary: Draft. Not nostalgia — every abstraction is a promise someone else made.
+summary: Draft. Not nostalgia, every abstraction is a promise someone else made.
 date: 2026-09-01
 tags: [c, go, systems]
 kind: note

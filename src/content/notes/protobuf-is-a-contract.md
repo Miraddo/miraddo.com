@@ -19,7 +19,7 @@ Rules that follow directly, and that no tutorial seems to state plainly:
 
 - Never reuse a field number. `reserved` exists for exactly this.
 - Never change a field's type in a way that changes its wire type.
-- `optional` versus unset matters again in proto3 — know which you are relying on.
+- `optional` versus unset matters again in proto3, know which you are relying on.
 - A new field must be safe to receive as absent, because old senders will not
   send it.
 

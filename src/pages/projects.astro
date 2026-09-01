@@ -18,7 +18,7 @@ const langs = [...new Set(all.map((p) => p.data.language))];
 
 <Base
   title="Projects"
-  description="Open source work by Milad Poshtdari — Go, C, networking, and systems tooling."
+  description="Open source work by Milad Poshtdari. Go, C, networking, and systems tooling."
   context="PROJECTS"
 >
   <section class="panel">
@@ -29,7 +29,7 @@ const langs = [...new Set(all.map((p) => p.data.language))];
       Open source, mostly Go and C. Written to be read, not only to run. These are the
       {all.length} worth pointing at; all {site.publicRepos} public repositories live on
       <a href="https://github.com/miraddo" rel="noopener" style="border-bottom:1px solid var(--yellow)">GitHub</a>.
-      Anything marked <strong>planned</strong> is a repository with no implementation yet — the
+      Anything marked <strong>planned</strong> is a repository with no implementation yet:
       intent is stated, not the code.
     </p>
   </section>
@@ -105,12 +105,12 @@ const langs = [...new Set(all.map((p) => p.data.language))];
             <div class="btn-row" style="margin-top:12px">
               {p.data.repo && (
                 <a class="btn" href={p.data.repo} rel="noopener">
-                  SOURCE<span class="sr-only"> — {p.data.title} on GitHub</span>
+                  SOURCE<span class="sr-only">: {p.data.title} on GitHub</span>
                 </a>
               )}
               {p.data.url && (
                 <a class="btn" href={p.data.url} rel="noopener">
-                  LIVE<span class="sr-only"> — visit {p.data.title}</span>
+                  LIVE<span class="sr-only">: visit {p.data.title}</span>
                 </a>
               )}
             </div>

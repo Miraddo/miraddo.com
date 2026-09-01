@@ -13,7 +13,7 @@ This site is deliberately boring infrastructure with one interesting part.
 
 [Astro](https://astro.build) with `output: 'static'`. Every page is rendered at
 build time into plain HTML. There is no client-side framework, no hydration,
-and no JavaScript shipped for the layout — the only script on the site is the
+and no JavaScript shipped for the layout, the only script on the site is the
 one that is not there.
 
 Content lives in Markdown under `src/content/`, typed by a Zod schema, so a

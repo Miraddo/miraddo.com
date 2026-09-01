@@ -1,6 +1,6 @@
 ---
 title: RAG is four steps and a framework hides which one is slow
-summary: Draft. The reasoning behind goRAG — not yet an implementation.
+summary: Draft. The reasoning behind goRAG, not yet an implementation.
 date: 2026-09-01
 tags: [go, ai, vector-search, architecture]
 kind: note
@@ -12,13 +12,13 @@ Retrieval-augmented generation is: chunk, embed, retrieve, prompt.
 Four steps. Each has one or two decisions that determine the quality of the
 whole thing:
 
-1. **Chunk** — size and overlap. Too small and you lose context; too large and
+1. **Chunk**, size and overlap. Too small and you lose context; too large and
    retrieval returns mush.
-2. **Embed** — which model, and the fact that you must use the *same* one for
+2. **Embed**, which model, and the fact that you must use the *same* one for
    documents and for queries.
-3. **Retrieve** — the index, the distance metric, how many results, and whether
+3. **Retrieve**, the index, the distance metric, how many results, and whether
    you rerank.
-4. **Prompt** — how retrieved context is placed, and what happens when nothing
+4. **Prompt**, how retrieved context is placed, and what happens when nothing
    relevant was found.
 
 A framework will do all four in one call. That is genuinely useful right up to

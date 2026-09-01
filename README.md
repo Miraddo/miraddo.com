@@ -8,7 +8,7 @@ Live: https://miraddo.com
 
 ```bash
 npm install
-npm run dev      # http://localhost:4321 — drafts visible
+npm run dev      # http://localhost:4321, drafts visible
 npm run build    # -> dist/
 npm run preview  # serve the production build locally
 npm run check    # astro check (types + templates)
@@ -50,7 +50,7 @@ Body. Link other notes with [[some-slug]] or [[some-slug|custom text]].
 - Wikilinks resolve by filename **or** by note title, matched case- and
   punctuation-insensitively. `src/lib/notes.ts` (the graph) and
   `src/lib/remark-wikilink.mjs` (the rendered links) must accept the same
-  aliases — if they drift, the graph counts an edge the page shows as unwritten.
+  aliases, if they drift, the graph counts an edge the page shows as unwritten.
 - Wikilinks inside fenced or inline code are ignored, so examples in a note
   about the system do not become edges.
 - A wikilink to a note that does not exist yet renders dimmed instead of 404ing,
@@ -72,7 +72,7 @@ five releases, and verifies the live URLs. No restart, no reload, no downtime.
 
 `deploy.sh` gates on `astro check` and the test suite before it builds, stamps
 the release id into every page, and verifies after activation that the live HTML
-carries **that** stamp — a 200 alone cannot prove the swap worked, because a
+carries **that** stamp, a 200 alone cannot prove the swap worked, because a
 failed swap serves the previous release with a perfectly healthy 200.
 
 Roll back:
@@ -83,7 +83,7 @@ npm run rollback -- --list  # what is available
 ```
 
 `rollback.sh` orders releases by name (`YYYYmmdd-HHMMSS` sorts chronologically)
-rather than by mtime — `tar -xz` rewrites mtimes from the local build, so mtime
+rather than by mtime, `tar -xz` rewrites mtimes from the local build, so mtime
 order is not deploy order. It resolves "previous" relative to what `current`
 actually points at, so consecutive rollbacks keep going back, and it exits 1
 loudly when there is no candidate rather than silently doing nothing.
@@ -92,7 +92,7 @@ loudly when there is no candidate rather than silently doing nothing.
 `/opt/miraddo`, and a bind mount is pinned to the inode it had at container
 start. Swapping the mounted directory itself leaves Caddy serving a deleted
 inode and every URL 404s until the container is recreated. Only the symlink
-inside the mount may move, and it must stay **relative** — `/opt/miraddo` does
+inside the mount may move, and it must stay **relative**, `/opt/miraddo` does
 not exist inside the container.
 
 Edits to `deploy/caddy-miraddo.conf` must be applied to
@@ -103,7 +103,7 @@ ssh -i ~/.ssh/fluentx root@65.109.219.238 "docker exec fluentdeutsch-caddy-1 cad
 ```
 
 Only a change to the compose **volumes** needs the container recreated, and then
-with `docker compose -f docker-compose.prod.yml up -d --no-deps caddy` — without
+with `docker compose -f docker-compose.prod.yml up -d --no-deps caddy`, without
 `--no-deps`, Compose restarts the whole FluentDeutsch stack.
 
 Regenerate the social card after changing the name, role, or palette:
@@ -141,7 +141,7 @@ that is not there.
   fluentdeutsch.com and tale.miraddo.com
 - Files: `/opt/miraddo` mounted read-only at `/srv/miraddo-root`; Caddy serves
   `/srv/miraddo-root/current`, a relative symlink into `releases/`
-- Fonts are self-hosted in `public/fonts/` — no Google Fonts request, so no
+- Fonts are self-hosted in `public/fonts/`, no Google Fonts request, so no
   third-party render-blocking hop and no visitor IPs leaving the origin
 - Cloudflare prepends a **managed robots.txt** ahead of `public/robots.txt` in
   production. If the served file does not match the repo, that is why.

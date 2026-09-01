@@ -29,7 +29,7 @@ function walk(dir) {
 function collect(file) {
   const html = readFileSync(file, 'utf8');
   // Anchors only. <link rel="canonical"> and friends are metadata, not
-  // navigation — the 404 page's own canonical would otherwise report as dead.
+  // navigation, the 404 page's own canonical would otherwise report as dead.
   for (const [, href] of html.matchAll(/<a[^>]*\shref="(https?:\/\/[^"]+)"/g)) {
     if (!targets.has(href)) targets.set(href, new Set());
     targets.get(href).add(relative(DIST, file));

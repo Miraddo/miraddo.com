@@ -35,7 +35,7 @@ export async function GET(context: APIContext) {
   ].sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf());
 
   return rss({
-    title: `${site.name} — Writing`,
+    title: `${site.name}, Writing`,
     description:
       'Notes and articles on Go, systems, networks, and the parts of software worth writing down.',
     site: base,

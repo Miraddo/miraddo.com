@@ -12,7 +12,7 @@
 //
 // TODO(milad): the `summary` lines below were inferred from each article's
 // title and Medium tags, NOT from reading the articles. Rewrite them in your
-// own words — they render on the home page, on /notes/, and in the feed.
+// own words. They render on the home page, on /notes/, and in the feed.
 
 export interface ExternalArticle {
   title: string;

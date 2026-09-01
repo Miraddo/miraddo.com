@@ -49,13 +49,13 @@ else
     if [ "$r" != "$CURRENT" ]; then TARGET="$r"; break; fi
   done
   [ -n "$TARGET" ] || {
-    echo "!! no release to roll back to — '$CURRENT' is the only one on the server." >&2
+    echo "!! no release to roll back to, '$CURRENT' is the only one on the server." >&2
     exit 1
   }
 fi
 
 ssh_ "test -f '$ROOT/releases/$TARGET/index.html'" || {
-  echo "!! release '$TARGET' has no index.html — refusing to activate a broken release." >&2
+  echo "!! release '$TARGET' has no index.html, refusing to activate a broken release." >&2
   exit 1
 }
 
@@ -70,5 +70,5 @@ for path in / /about/ /projects/ /notes/ /contact/; do
   [ "$code" = "200" ] || fail=1
 done
 
-[ "$fail" = "0" ] || { echo "!! rollback verification failed — the site is still not healthy." >&2; exit 1; }
+[ "$fail" = "0" ] || { echo "!! rollback verification failed, the site is still not healthy." >&2; exit 1; }
 echo "==> Rolled back to $TARGET"

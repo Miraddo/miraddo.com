@@ -6,7 +6,7 @@ interface Props {
 }
 const { graph } = Astro.props;
 
-// Deterministic radial layout, computed at build time — no client JS, no
+// Deterministic radial layout, computed at build time, no client JS, no
 // physics simulation that lands somewhere different on every reload.
 // Nodes are grouped by their first tag so that related notes sit adjacent on
 // the ring; that keeps intra-cluster chords short and makes the clusters

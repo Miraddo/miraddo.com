@@ -70,7 +70,7 @@ test('drafts resolve in dev but not in a production build', () => {
   assert.notEqual(prod.type, 'link', 'linking to a draft in prod would 404');
 });
 
-test('the two resolvers agree — the renderer accepts exactly the graph aliases', async () => {
+test('the two resolvers agree (renderer accepts exactly the graph aliases)', async () => {
   // The graph (graph.ts) and the renderer (remark-wikilink.mjs) build their
   // alias sets independently. If they drift, a page shows a link as unwritten
   // that the connections panel shows as live. This asserts they cannot.

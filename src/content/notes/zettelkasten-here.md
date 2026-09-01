@@ -9,14 +9,14 @@ draft: true
 
 Notes here are atomic: one idea per note, titled as a claim rather than a topic.
 
-Linking is done with double brackets — `[[colophon]]` points at
+Linking is done with double brackets, `[[colophon]]` points at
 [[colophon|the colophon]], and `[[some-slug|any label]]` sets the display text.
 
 Three things are derived at build time:
 
-- **Links out** — what this note points at.
-- **Linked from** — what points here. Never written by hand.
-- **Related by tag** — notes sharing vocabulary but not yet linked. This is the
+- **Links out**, what this note points at.
+- **Linked from**, what points here. Never written by hand.
+- **Related by tag**, notes sharing vocabulary but not yet linked. This is the
   list that suggests the next link worth making.
 
 The system map on the notes index stays hidden until there are twelve notes. A

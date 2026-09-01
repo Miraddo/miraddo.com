@@ -34,7 +34,7 @@ const notes = defineCollection({
     // Required: it is the meta description, the social-card subtitle, the
     // index subtitle and the RSS description. Defaulting it to '' made all
     // four silently blank.
-    summary: z.string().min(1, 'summary is required — it is the meta description and RSS text'),
+    summary: z.string().min(1, 'summary is required, it is the meta description and RSS text'),
     date: z.coerce.date(),
     updated: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),

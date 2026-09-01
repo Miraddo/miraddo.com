@@ -12,11 +12,12 @@ export const site = {
   locationShort: 'HAMBURG · DE',
   email: 'hello@miraddo.com',
   tagline:
-    'I build and improve services — large-scale web applications and enterprise systems. Go by choice, C when it matters, Kubernetes because that is where it all ends up.',
+    'I build and improve services: large-scale web applications and enterprise systems. Go by choice, C when it matters, Kubernetes because that is where it all ends up.',
   shortTagline: 'Go and systems engineer in Hamburg.',
-  motto: "I'd like to be a human coder, not an AI coder.",
+  /** One line, in your voice. Change it here and it changes everywhere. */
+  motto: 'Understand the layer below the one you are working in.',
   description:
-    'Milad Poshtdari (miraddo) — Go and systems engineer in Hamburg. Senior IT consultant at Lufthansa Industry Solutions. Open source, writing, and teaching.',
+    'Milad Poshtdari (miraddo). Go and systems engineer in Hamburg. Senior IT consultant at Lufthansa Industry Solutions. Open source, writing, and teaching.',
   status: 'Available for conversation',
   /** Single source of truth for the repo count. Referenced, never retyped. */
   publicRepos: 45,
@@ -39,13 +40,13 @@ export const nav = [
   { label: 'Contact', href: '/contact/' },
 ] as const;
 
-// The three NOW readouts on the homepage. Keep these current — a stale
+// The three NOW readouts on the homepage. Keep these current. A stale
 // "now" page is worse than none.
 export const now = {
   updated: '2026-08-31',
   focus: 'Distributed systems and service architecture at scale.',
   learning: 'Computer science at Universität zu Lübeck. Since 2024.',
-  building: 'goRAG — a RAG backend in Go. Design stage; nothing committed yet.',
+  building: 'goRAG, a RAG backend in Go. Design stage; nothing committed yet.',
   next: 'Compilers and runtime internals.',
   reading: 'Data-oriented design, network internals, compiler construction.',
 } as const;
@@ -112,7 +113,7 @@ export const languages = [
 
 export const timeline = [
   {
-    year: '2024 —',
+    year: 'Since 2024',
     title: 'Universität zu Lübeck',
     detail: 'Back to first principles: computer science, alongside the day job.',
   },
@@ -137,6 +138,6 @@ export const teaching = {
   headline: 'Teaching & Community',
   body: [
     'Volunteer Python teacher at ReDI School of Digital Integration, helping newcomers to Germany write their first line of code.',
-    'Contributor to the Persian-language Go community — free books, translations, and documentation, so that learning Go does not require learning English first.',
+    'Contributor to the Persian-language Go community: free books, translations, and documentation, so that learning Go does not require learning English first.',
   ],
 } as const;

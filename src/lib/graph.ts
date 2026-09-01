@@ -21,7 +21,7 @@ const WIKILINK = /\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g;
 
 /**
  * URL-safe form of an arbitrary string. Used for tag paths, and as a *fallback*
- * when matching wikilink targets — never as the canonical note identifier,
+ * when matching wikilink targets, never as the canonical note identifier,
  * because collection ids come from Astro's loader, not from here.
  *
  * Must stay byte-identical to the copy in remark-wikilink.mjs: the two
@@ -170,10 +170,10 @@ export function tagIndex<T extends NoteLike>(notes: T[]): { tag: string; slug: s
   return [...map.entries()]
     .map(([tag, list]) => {
       const slug = tagSlug(tag);
-      if (!slug) throw new Error(`Tag "${tag}" slugs to an empty string — rename it.`);
+      if (!slug) throw new Error(`Tag "${tag}" slugs to an empty string, rename it.`);
       const clash = seen.get(slug);
       if (clash && clash !== tag) {
-        throw new Error(`Tags "${clash}" and "${tag}" both slug to "${slug}" — rename one.`);
+        throw new Error(`Tags "${clash}" and "${tag}" both slug to "${slug}", rename one.`);
       }
       seen.set(slug, tag);
       return { tag, slug, notes: list };
