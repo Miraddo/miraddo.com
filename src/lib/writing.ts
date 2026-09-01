@@ -9,6 +9,10 @@
 //
 // Add new external pieces here. Notes written on this site come from the
 // content collection and do not need an entry.
+//
+// TODO(milad): the `summary` lines below were inferred from each article's
+// title and Medium tags, NOT from reading the articles. Rewrite them in your
+// own words — they render on the home page, on /notes/, and in the feed.
 
 export interface ExternalArticle {
   title: string;
